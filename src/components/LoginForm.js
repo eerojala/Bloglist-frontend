@@ -1,10 +1,6 @@
 import React from 'react'
 
 const LoginForm = (props) => {
-    if (props.user !== null) {
-        return null
-    }
-
     return(
         <div>
             <h2>Log in to application</h2>

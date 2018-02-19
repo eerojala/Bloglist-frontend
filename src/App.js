@@ -1,6 +1,7 @@
 import React from 'react'
 import BlogView from './components/BlogView'
-import LoginForm from './components/LoginForm'
+import Togglable from './components/Togglable'
+import Login from './components/Login'
 import BlogForm from './components/BlogForm'
 import blogService from './services/blogs'
 import loginService from './services/login'
@@ -15,7 +16,9 @@ class App extends React.Component {
       title: '',
       author: '',
       url: '',
-      user: null
+      user: null,
+      hideLoginForm: false,
+      hideBlogForm: true
     }
   }
 
@@ -28,7 +31,11 @@ class App extends React.Component {
 
     if (loggedUserJson) {
       const user = JSON.parse(loggedUserJson)
-      this.setState({ user })
+      this.setState({ 
+        user,
+        hideLoginForm: true,
+        hideBlogForm: false 
+      })
       blogService.setToken(user.token)
     }
   } 
@@ -48,7 +55,9 @@ class App extends React.Component {
       this.setState({ 
         username: '', 
         password: '', 
-        user
+        user,
+        hideLoginForm: true,
+        hideBlogForm: false
       })
     } catch (exception) {
       console.log('An error occurred during the login process')
@@ -57,7 +66,11 @@ class App extends React.Component {
 
   logout = () => {
     window.localStorage.removeItem('loggedBloglistUser')
-    this.setState({ user: null })
+    this.setState({ 
+      user: null,
+      hideLoginForm: false,
+      hideBlogForm: true 
+    })
   }
 
   createBlog = async (event) => {
@@ -89,27 +102,32 @@ class App extends React.Component {
 
   render() {
     return (
-      <div>     
-        <LoginForm
-          user={this.state.user} 
-          username={this.state.username}
-          password={this.state.password}
-          login = {this.login}
-          handleFieldChange = {this.handleFieldChange}
-        />
+      <div>
+        <Togglable buttonLabel="Login" hideToggle={this.state.hideLoginForm}>
+          <Login
+            user={this.state.user} 
+            username={this.state.username}
+            password={this.state.password}
+            login={this.login}
+            handleFieldChange={this.handleFieldChange}
+          />
+        </Togglable>     
         <BlogView 
           user={this.state.user} 
           blogs={this.state.blogs}
           logout={this.logout} 
         />
-        <BlogForm 
-          user={this.state.user}
-          title={this.state.title}
-          author={this.state.author}
-          url={this.state.url}
-          createBlog={this.createBlog}
-          handleFieldChange={this.handleFieldChange}
-        />
+        <Togglable buttonLabel='Create blog' hideToggle={this.state.hideBlogForm}>
+          <BlogForm 
+            user={this.state.user}
+            title={this.state.title}
+            author={this.state.author}
+            url={this.state.url}
+            createBlog={this.createBlog}
+            handleFieldChange={this.handleFieldChange}
+          />   
+        </Togglable>
+
       </div>
     )
   }

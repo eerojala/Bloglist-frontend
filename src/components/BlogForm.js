@@ -1,10 +1,6 @@
 import React from 'react'
 
 const BlogForm = (props) => {
-    if (props.user === null) {
-        return null
-    }
-
     return(
         <div>
             <h3>Create new</h3>
