@@ -1,5 +1,5 @@
 import React from 'react'
-import Blogs from './components/Blogs'
+import BlogView from './components/BlogView'
 import LoginForm from './components/LoginForm'
 import blogService from './services/blogs'
 import loginService from './services/login'
@@ -19,16 +19,28 @@ class App extends React.Component {
     blogService.getAll().then(blogs =>
       this.setState({ blogs })
     )
+
+    const loggedUserJson = window.localStorage.getItem('loggedBloglistUser')
+
+    if (loggedUserJson) {
+      const user = JSON.parse(loggedUserJson)
+      this.setState({ user })
+      blogService.setToken(user.token)
+    }
   } 
 
   login = async (event) => {
     event.preventDefault()
+
     try {
       const user = await loginService.login({
         username: this.state.username,
         password: this.state.password
       })
       
+      window.localStorage.setItem('loggedBloglistUser', JSON.stringify(user))
+      blogService.setToken(user.token)
+
       this.setState({ 
         username: '', 
         password: '', 
@@ -37,6 +49,11 @@ class App extends React.Component {
     } catch (exception) {
       console.log('An error occurred during the login process')
     }
+  }
+
+  logout = () => {
+    window.localStorage.removeItem('loggedBloglistUser')
+    this.setState({ user: null })
   }
   
   handleLoginFieldChange= (event) => {
@@ -53,7 +70,11 @@ class App extends React.Component {
           login = {this.login}
           handleLoginFieldChange = {this.handleLoginFieldChange}
         />
-        <Blogs user={this.state.user} blogs={this.state.blogs} />
+        <BlogView 
+          user={this.state.user} 
+          blogs={this.state.blogs}
+          logout={this.logout} 
+        />
       </div>
     );
   }
