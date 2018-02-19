@@ -1,6 +1,7 @@
 import React from 'react'
 import BlogView from './components/BlogView'
 import LoginForm from './components/LoginForm'
+import BlogForm from './components/BlogForm'
 import blogService from './services/blogs'
 import loginService from './services/login'
 
@@ -11,6 +12,9 @@ class App extends React.Component {
       blogs: [],
       username: '',
       password: '',
+      title: '',
+      author: '',
+      url: '',
       user: null
     }
   }
@@ -55,8 +59,31 @@ class App extends React.Component {
     window.localStorage.removeItem('loggedBloglistUser')
     this.setState({ user: null })
   }
+
+  createBlog = async (event) => {
+    event.preventDefault()
+
+    try {
+      const blogObject = {
+        title: this.state.title,
+        author: this.state.author,
+        url: this.state.url
+      }
+
+      const newBlog = await blogService.create(blogObject)
+
+      this.setState({
+        blogs: this.state.blogs.concat(newBlog),
+        title: '',
+        author: '',
+        url: ''
+      })
+    } catch (exception) {
+      console.log(exception)
+    }
+  }
   
-  handleLoginFieldChange= (event) => {
+  handleFieldChange = (event) => {
     this.setState({ [event.target.name]: event.target.value })
   }
 
@@ -68,16 +95,24 @@ class App extends React.Component {
           username={this.state.username}
           password={this.state.password}
           login = {this.login}
-          handleLoginFieldChange = {this.handleLoginFieldChange}
+          handleFieldChange = {this.handleFieldChange}
         />
         <BlogView 
           user={this.state.user} 
           blogs={this.state.blogs}
           logout={this.logout} 
         />
+        <BlogForm 
+          user={this.state.user}
+          title={this.state.title}
+          author={this.state.author}
+          url={this.state.url}
+          createBlog={this.createBlog}
+          handleFieldChange={this.handleFieldChange}
+        />
       </div>
-    );
+    )
   }
 }
 
-export default App;
+export default App
