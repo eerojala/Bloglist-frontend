@@ -1,5 +1,6 @@
 import React from 'react'
 import Button from './Button'
+import blogService from '../services/blogs'
 
 class Blog extends React.Component {
   constructor(props) {
@@ -12,6 +13,18 @@ class Blog extends React.Component {
 
   toggleDetails = () => {
     this.setState({ details: !this.state.details })
+  }
+
+  likeBlog = async () => {
+    try {
+      const blogObject = { ...this.state.blog, likes: this.state.blog.likes + 1 }
+      
+      await blogService.update(this.state.blog.id, blogObject)
+ 
+      this.setState({ blog: blogObject })
+    } catch (exception) {
+      console.log('Error: something went wrong when liking a blog')
+    }
   }
 
   render() {
@@ -28,8 +41,8 @@ class Blog extends React.Component {
         return (
           <div>
             <a href={this.state.blog.url}>{this.state.blog.url}</a> <br />
-            {this.state.blog.likes} likes <Button label="Like"/><br />
-            Added by {this.state.blog.user.name}<br />
+            {this.state.blog.likes} likes <Button onClick={this.likeBlog} label="Like"/><br />
+            Added by {this.state.blog.user.name}
           </div>
         )
       }
@@ -38,8 +51,8 @@ class Blog extends React.Component {
     }
 
     return(
-      <div style={blogStyle} onClick={this.toggleDetails}>
-        {this.state.blog.title} {this.state.blog.author}
+      <div style={blogStyle}>
+        <div onClick={this.toggleDetails}>{this.state.blog.title} {this.state.blog.author}</div>
         {details()}
       </div>
     )
