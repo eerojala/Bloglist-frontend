@@ -127,7 +127,6 @@ class App extends React.Component {
             handleFieldChange={this.handleFieldChange}
           />   
         </Togglable>
-
       </div>
     )
   }

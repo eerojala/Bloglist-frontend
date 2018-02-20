@@ -7,8 +7,8 @@ const Login = (props) => {
             <LoginForm 
                 username={props.username}
                 password={props.password}
-                login = {props.login}
-                handleFieldChange = {props.handleFieldChange}
+                login={props.login}
+                handleFieldChange={props.handleFieldChange}
             />
         </div>
     )
